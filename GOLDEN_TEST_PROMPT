@@ -1,0 +1,287 @@
+# Flutter Golden Test 작성 가이드
+
+## 기본 원칙
+
+1. **단일 책임**: 각 골든 테스트는 하나의 시각적 상태만 검증
+2. **명확한 명명**: 테스트 파일과 골든 파일의 이름은 검증 대상을 명확히 표현
+3. **다양한 환경 고려**: 다양한 화면 크기, 테마, 로케일에 대한 테스트 포함
+4. **최소한의 마진**: 테스트 대상 위젯의 정확한 크기만 캡처
+
+## 디렉토리 구조
+
+```
+test/
+├── goldens/
+│   ├── atoms/           # 기본 UI 컴포넌트
+│   ├── molecules/       # 복합 컴포넌트
+│   ├── organisms/       # 큰 단위의 컴포넌트
+│   └── screens/         # 전체 화면
+└── golden_test.dart     # 테스트 헬퍼
+```
+
+## 테스트 패턴
+
+```dart
+void main() {
+  group('ComponentName Golden Tests', () {
+    late GoldenTestHelper helper;
+
+    setUpAll(() async {
+      helper = GoldenTestHelper();
+      await helper.setUp();
+    });
+
+    testGoldens('renders correctly in different states', (tester) async {
+      final builder = GoldenBuilder.grid(
+        columns: 2,
+        widthToHeightRatio: 1,
+      )
+        ..addScenario(
+          'Default State',
+          Component(),
+        )
+        ..addScenario(
+          'Loading State',
+          Component(isLoading: true),
+        )
+        ..addScenario(
+          'Error State',
+          Component(hasError: true),
+        );
+
+      await tester.pumpWidgetBuilder(
+        builder.build(),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+
+      await screenMatchesGolden(tester, 'component_states');
+    });
+
+    testGoldens('renders correctly in different themes', (tester) async {
+      final builder = GoldenBuilder.grid(
+        columns: 2,
+        widthToHeightRatio: 1,
+      )
+        ..addScenario(
+          'Light Theme',
+          Component(),
+          wrapper: materialAppWrapper(theme: ThemeData.light()),
+        )
+        ..addScenario(
+          'Dark Theme',
+          Component(),
+          wrapper: materialAppWrapper(theme: ThemeData.dark()),
+        );
+
+      await tester.pumpWidgetBuilder(
+        builder.build(),
+        wrapper: materialAppWrapper(),
+      );
+
+      await screenMatchesGolden(tester, 'component_themes');
+    });
+
+    testGoldens('renders correctly in different sizes', (tester) async {
+      final builder = GoldenBuilder.column()
+        ..addScenario(
+          'Mobile',
+          Component(),
+          constraints: const BoxConstraints(maxWidth: 360),
+        )
+        ..addScenario(
+          'Tablet',
+          Component(),
+          constraints: const BoxConstraints(maxWidth: 768),
+        )
+        ..addScenario(
+          'Desktop',
+          Component(),
+          constraints: const BoxConstraints(maxWidth: 1366),
+        );
+
+      await tester.pumpWidgetBuilder(
+        builder.build(),
+        wrapper: materialAppWrapper(),
+      );
+
+      await screenMatchesGolden(tester, 'component_sizes');
+    });
+  });
+}
+```
+
+## 헬퍼 클래스 구현
+
+```dart
+class GoldenTestHelper {
+  Future<void> setUp() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    
+    // 폰트 로딩
+    await loadAppFonts();
+    
+    // 디바이스 픽셀 레이시오 설정
+    tester.binding.window.devicePixelRatioTestValue = 1.0;
+    
+    // 화면 크기 설정
+    tester.binding.window.physicalSizeTestValue = Size(1080, 1920);
+  }
+
+  Future<void> loadAppFonts() async {
+    final fontLoader = FontLoader('AppFont')
+      ..addFont(rootBundle.load('assets/fonts/app_font.ttf'));
+    await fontLoader.load();
+  }
+}
+```
+
+## 골든 테스트 작성 시 고려사항
+
+1. **상태 검증**
+   - 기본 상태
+   - 로딩 상태
+   - 에러 상태
+   - 데이터 있는 상태
+   - 데이터 없는 상태
+
+2. **테마 검증**
+   - 라이트 테마
+   - 다크 테마
+   - 커스텀 테마
+
+3. **반응형 검증**
+   - 모바일 레이아웃
+   - 태블릿 레이아웃
+   - 데스크톱 레이아웃
+
+4. **접근성 검증**
+   - 다양한 텍스트 크기
+   - 고대비 모드
+   - RTL 레이아웃
+
+5. **로케일 검증**
+   - 다양한 언어
+   - 날짜/시간 형식
+   - 숫자 형식
+
+## 모범 사례
+
+1. **격리된 테스트**
+   ```dart
+   // Good
+   testGoldens('button states', (tester) async {
+     await tester.pumpWidget(
+       MaterialApp(
+         home: Scaffold(
+           body: Center(
+             child: MyButton(),
+           ),
+         ),
+       ),
+     );
+   });
+
+   // Bad - 불필요한 컨텍스트 포함
+   testGoldens('button states', (tester) async {
+     await tester.pumpWidget(
+       MyFullApp(
+         home: MyComplexScreen(
+           button: MyButton(),
+         ),
+       ),
+     );
+   });
+   ```
+
+2. **의미 있는 시나리오**
+   ```dart
+   // Good
+   ..addScenario(
+     'shows error message when API fails',
+     MyWidget(
+       error: ApiError('Network connection failed'),
+     ),
+   )
+
+   // Bad - 불명확한 시나리오
+   ..addScenario(
+     'error state',
+     MyWidget(
+       error: Error(),
+     ),
+   )
+   ```
+
+3. **적절한 제약 조건**
+   ```dart
+   // Good
+   constraints: const BoxConstraints(
+     maxWidth: 360,
+     maxHeight: 200,
+   )
+
+   // Bad - 불필요하게 큰 제약
+   constraints: const BoxConstraints(
+     maxWidth: 1000,
+     maxHeight: 1000,
+   )
+   ```
+
+## CI/CD 통합
+
+```yaml
+# GitHub Actions 예시
+jobs:
+  golden_tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          
+      - name: Run Golden Tests
+        run: flutter test --tags=golden
+        
+      - name: Upload Failure Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: golden-failures
+          path: test/goldens/failures
+```
+
+## 자동화 스크립트
+
+```bash
+# 골든 테스트 업데이트
+flutter test --update-goldens --tags=golden
+
+# 특정 디렉토리의 골든 테스트만 실행
+flutter test --tags=golden test/goldens/atoms
+
+# 실패한 골든 테스트의 차이점 시각화
+flutter test --tags=golden --generate-diff
+```
+
+## 문제 해결
+
+1. **플랫폼 차이**
+   - CI 환경과 로컬 환경의 차이 최소화
+   - 폰트 렌더링 차이 고려
+   - 픽셀 레이시오 표준화
+
+2. **테스트 불안정성**
+   - 애니메이션 비활성화
+   - 시간 종속성 제거
+   - 랜덤 데이터 고정
+
+3. **성능 최적화**
+   - 필요한 골든 파일만 생성
+   - 이미지 크기 최적화
+   - 테스트 병렬 실행 
