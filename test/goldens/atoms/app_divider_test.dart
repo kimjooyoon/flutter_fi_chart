@@ -26,6 +26,8 @@ void main() {
               ],
             ),
           ),
+          useMaterialApp: true,
+          useScaffold: true,
         ),
         GoldenTestHelper.createScenario(
           name: 'Colored Divider',
@@ -43,6 +45,7 @@ void main() {
               ],
             ),
           ),
+          brightness: Brightness.light,
         ),
         GoldenTestHelper.createScenario(
           name: 'Indented Divider',
@@ -60,6 +63,7 @@ void main() {
               ],
             ),
           ),
+          theme: ThemeData.light(),
         ),
       ];
 
@@ -67,6 +71,8 @@ void main() {
         tester,
         'app_divider_states',
         scenarios,
+        surfaceSize: const Size(300, 800),
+        skipPumpAndSettle: false,
       );
     });
 
@@ -86,6 +92,7 @@ void main() {
               ],
             ),
           ),
+          brightness: Brightness.light,
         ),
         GoldenTestHelper.createScenario(
           name: 'Colored Vertical',
@@ -103,6 +110,7 @@ void main() {
               ],
             ),
           ),
+          theme: ThemeData.dark(),
         ),
       ];
 
@@ -110,6 +118,7 @@ void main() {
         tester,
         'app_vertical_divider_states',
         scenarios,
+        surfaceSize: const Size(300, 400),
       );
     });
   });
