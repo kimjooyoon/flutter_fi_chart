@@ -1,7 +1,7 @@
-.PHONY: all clean test lint format analyze security deps build-dev build-prod coverage performance golden-test
+.PHONY: all clean test lint format analyze security deps build-dev build-prod coverage performance golden-test check-atomic
 
 # 모든 검증을 실행
-all: deps format lint analyze test
+all: deps format lint analyze check-atomic test
 
 # 의존성 설치
 deps:
@@ -23,6 +23,11 @@ lint:
 analyze:
 	@echo "Running static analysis..."
 	@flutter analyze --fatal-infos --fatal-warnings
+
+# Atomic Design 검사
+check-atomic:
+	@echo "Checking atomic design conventions..."
+	@dart run scripts/check_atomic_naming.dart
 
 # 테스트 실행
 test:
@@ -94,5 +99,5 @@ check-environment:
 	$(call check_exit,"Environment check")
 
 # CI 환경 검증
-ci: deps format lint analyze test
+ci: deps format lint analyze check-atomic test
 	@echo "CI checks completed successfully" 

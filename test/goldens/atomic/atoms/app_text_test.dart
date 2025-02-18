@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter_fi_chart/presentation/atomic/atoms/app_text.dart';
-import '../../helpers/golden_test_helper.dart';
+import '../../../helpers/atomic/golden_test_helper.dart';
 
 void main() {
   group('AppText Golden Tests', () {
