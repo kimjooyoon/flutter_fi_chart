@@ -65,11 +65,12 @@ class GoldenTestHelper {
   }
 }
 
+@immutable
 class GoldenTestScenario {
   final String name;
   final Widget widget;
 
-  GoldenTestScenario({
+  const GoldenTestScenario({
     required this.name,
     required this.widget,
   });
