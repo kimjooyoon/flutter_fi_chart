@@ -1,0 +1,11 @@
+tags:
+  # UI 테스트
+  golden: {}
+  
+  # 성능 테스트
+  performance: {}
+  
+  # 통합 테스트
+  integration: {}
+
+timeout: 2x 

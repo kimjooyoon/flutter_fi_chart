@@ -34,22 +34,24 @@ test:
 	@echo "Running tests..."
 	@flutter test --coverage --exclude-tags=performance,golden
 
-# 커버리지 리포트 생성 (선택적)
-coverage: test
-	@echo "Generating coverage report..."
-	@if command -v genhtml >/dev/null 2>&1; then \
-		genhtml coverage/lcov.info -o coverage/html && \
-		echo "Coverage report generated at coverage/html/index.html"; \
-	else \
-		echo "Warning: genhtml not found. Install lcov for HTML coverage reports"; \
-		echo "Coverage data available in coverage/lcov.info"; \
-	fi
-
 # 성능 테스트
 performance:
 	@echo "Running performance tests..."
-	@flutter test --tags=performance
-	@flutter run --profile --dart-define=MEASURE_MEMORY=true
+	@flutter build apk --profile
+	@flutter run --profile \
+		--dart-define=PERFORMANCE_OVERLAY=true \
+		--cache-sksl \
+		--purge-persistent-cache \
+		--benchmark-mode
+
+# 성능 프로파일링
+profile:
+	@echo "Running performance profiling..."
+	@flutter run --profile \
+		--trace-skia \
+		--dump-skp-on-shader-compilation \
+		--cache-sksl \
+		--purge-persistent-cache
 
 # 골든 테스트
 golden-test:
