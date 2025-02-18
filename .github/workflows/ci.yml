@@ -44,9 +44,10 @@ jobs:
       - name: Security check
         run: make security
 
-  security-scan:
-    name: Security Scan
+  performance:
+    name: Performance Check
     runs-on: ubuntu-latest
+    needs: test
     
     steps:
       - uses: actions/checkout@v3
@@ -61,7 +62,72 @@ jobs:
       - name: Install dependencies
         run: make deps
       
-      - name: Run security scan
-        run: |
-          make security
-          make analyze 
+      - name: Run performance tests
+        run: flutter test --tags=performance
+      
+      - name: Build profile mode
+        run: flutter build apk --profile
+      
+      - name: Archive performance artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-report
+          path: build/reports/performance
+
+  golden-test:
+    name: Golden Tests
+    runs-on: macos-latest
+    needs: test
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          cache: true
+      
+      - name: Install dependencies
+        run: make deps
+      
+      - name: Run golden tests
+        run: flutter test --tags=golden
+      
+      - name: Archive golden test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: golden-failures
+          path: test/goldens/failures
+        if: failure()
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test, performance, golden-test]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          cache: true
+      
+      - name: Install dependencies
+        run: make deps
+      
+      - name: Build release
+        run: flutter build apk --release
+      
+      - name: Deploy to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: build/app/outputs/flutter-apk/app-release.apk 
