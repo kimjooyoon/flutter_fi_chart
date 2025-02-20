@@ -63,32 +63,28 @@ jobs:
       - name: Install dependencies
         run: make deps
       
-      - name: Run performance profiling
+      - name: Build profile APK
+        run: flutter build apk --profile
+      
+      - name: Analyze app size
         run: |
-          flutter build apk --profile
-          flutter run --profile \
-            --dart-define=PERFORMANCE_OVERLAY=true \
-            --cache-sksl \
-            --purge-persistent-cache \
-            --benchmark-mode \
-            --machine > performance_metrics.json
+          APK_SIZE=$(stat -c%s build/app/outputs/flutter-apk/app-profile.apk)
+          echo "APK Size: $APK_SIZE bytes"
+          if [ $APK_SIZE -gt 100000000 ]; then
+            echo "Warning: APK size exceeds 100MB"
+            exit 1
+          fi
       
       - name: Generate performance report
         run: |
           mkdir -p build/reports/performance
           flutter analyze --write=build/reports/performance/static_analysis.txt
-          flutter run --profile --dump-skp-on-shader-compilation
-          flutter run --profile --dump-shader-bundle
       
       - name: Archive performance artifacts
         uses: actions/upload-artifact@v4
         with:
           name: performance-report
-          path: |
-            build/reports/performance
-            performance_metrics.json
-            build/**/sksl-*.json
-            build/**/shader_bundle.json
+          path: build/reports/performance
 
   golden-test:
     name: Golden Tests
