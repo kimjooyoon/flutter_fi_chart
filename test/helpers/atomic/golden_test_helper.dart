@@ -1,118 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
 
 class GoldenTestHelper {
+  /// 골든 테스트 환경 설정
   static Future<void> setupGoldenTests() async {
-    await loadAppFonts();
-    // 디바이스 설정 초기화
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // 디바이스 설정
     final binding = TestWidgetsFlutterBinding.ensureInitialized();
-    // 기본 디바이스 설정
     binding.platformDispatcher.displays.first.devicePixelRatio = 1.0;
     binding.platformDispatcher.displays.first.size = const Size(1080, 1920);
   }
 
-  static Future<void> pumpGoldenTest(
-    WidgetTester tester,
-    String description,
-    List<GoldenTestScenario> scenarios, {
-    Size surfaceSize = const Size(400, 600),
-    bool useScaffold = true,
-    bool useMaterialApp = true,
+  /// 테스트 시나리오 생성
+  static GoldenTestScenario createScenario({
+    required String name,
+    required Widget widget,
     ThemeData? theme,
     Brightness? brightness,
-    List<Locale>? supportedLocales,
-    bool skipPumpAndSettle = false,
-  }) async {
-    final builder = GoldenBuilder.column()
-      ..addScenario(
-        'Test Scenario',
-        Container(
-          width: surfaceSize.width,
-          constraints: BoxConstraints(
-            minHeight: surfaceSize.height,
-            maxHeight: surfaceSize.height,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: scenarios
-                  .map(
-                    (scenario) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: _wrapWidget(
-                        scenario.widget,
-                        useScaffold: useScaffold,
-                        useMaterialApp: useMaterialApp,
-                        theme: theme ?? scenario.theme,
-                        brightness: brightness,
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ),
-      );
+    bool useMaterialApp = true,
+    bool useScaffold = false,
+  }) {
+    Widget wrappedWidget = widget;
 
-    await tester.pumpWidgetBuilder(
-      builder.build(),
-      surfaceSize: surfaceSize,
+    if (useScaffold) {
+      wrappedWidget = Scaffold(body: Center(child: widget));
+    }
+
+    if (useMaterialApp) {
+      wrappedWidget = MaterialApp(
+        theme: theme ??
+            (brightness == Brightness.dark
+                ? ThemeData.dark()
+                : ThemeData.light()),
+        debugShowCheckedModeBanner: false,
+        home: wrappedWidget,
+      );
+    }
+
+    return GoldenTestScenario(
+      name: name,
+      widget: wrappedWidget,
+    );
+  }
+
+  /// 골든 테스트 실행
+  static Future<void> pumpGoldenTest(
+    WidgetTester tester,
+    String name,
+    List<GoldenTestScenario> scenarios, {
+    Size? surfaceSize,
+    bool skipPumpAndSettle = true,
+  }) async {
+    await tester.binding.setSurfaceSize(surfaceSize ?? const Size(800, 600));
+
+    await tester.pumpWidget(
+      Column(
+        children: scenarios.map((scenario) => scenario.widget).toList(),
+      ),
     );
 
     if (!skipPumpAndSettle) {
       await tester.pumpAndSettle();
     }
 
-    await screenMatchesGolden(tester, description);
-  }
-
-  static Widget _wrapWidget(
-    Widget widget, {
-    bool useScaffold = true,
-    bool useMaterialApp = true,
-    ThemeData? theme,
-    Brightness? brightness,
-  }) {
-    Widget wrappedWidget = widget;
-
-    if (useScaffold) {
-      wrappedWidget = Scaffold(
-        body: Center(child: wrappedWidget),
-      );
-    }
-
-    if (useMaterialApp) {
-      wrappedWidget = MaterialApp(
-        theme: theme?.copyWith(
-              brightness: brightness,
-            ) ??
-            ThemeData.light().copyWith(
-              brightness: brightness,
-            ),
-        debugShowCheckedModeBanner: false,
-        home: wrappedWidget,
-      );
-    }
-
-    return wrappedWidget;
-  }
-
-  static GoldenTestScenario createScenario({
-    required String name,
-    required Widget widget,
-    ThemeData? theme,
-    bool useScaffold = true,
-    bool useMaterialApp = true,
-    Brightness? brightness,
-  }) {
-    return GoldenTestScenario(
-      name: name,
-      widget: widget,
-      theme: theme,
-      useScaffold: useScaffold,
-      useMaterialApp: useMaterialApp,
-      brightness: brightness,
+    await expectLater(
+      find.byType(Column),
+      matchesGoldenFile('goldens/$name.png'),
     );
   }
 }

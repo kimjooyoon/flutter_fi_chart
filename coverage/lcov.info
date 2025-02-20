@@ -88,7 +88,7 @@ LF:10
 LH:10
 end_of_record
 SF:lib/presentation/atomic/atoms/app_card.dart
-DA:6,0
+DA:6,1
 DA:38,0
 DA:40,0
 DA:42,0
@@ -103,7 +103,7 @@ DA:51,0
 DA:52,0
 DA:53,0
 LF:14
-LH:0
+LH:1
 end_of_record
 SF:lib/presentation/atomic/atoms/app_divider.dart
 DA:6,1

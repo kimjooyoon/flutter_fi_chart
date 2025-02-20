@@ -1,66 +1,61 @@
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter_fi_chart/presentation/atomic/atoms/app_text.dart';
-import '../../../helpers/atomic/golden_test_helper.dart';
 
 void main() {
-  group('AppText Golden Tests', () {
-    setUpAll(() async {
-      await GoldenTestHelper.setupGoldenTests();
-    });
-
-    testGoldens('AppText renders correctly in light theme', (tester) async {
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Heading',
-          widget: const AppText(
+  goldenTest(
+    'AppText renders correctly',
+    fileName: 'app_text',
+    builder: () => GoldenTestGroup(
+      children: [
+        GoldenTestScenario(
+          name: 'heading variant',
+          child: const AppText(
             'Heading Text',
             variant: TextVariant.heading,
           ),
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Body',
-          widget: const AppText(
+        GoldenTestScenario(
+          name: 'body variant',
+          child: const AppText(
             'Body Text',
             variant: TextVariant.body,
           ),
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_text_light_theme',
-        scenarios,
-      );
-    });
-
-    testGoldens('AppText renders correctly in dark theme', (tester) async {
-      final darkTheme = ThemeData.dark();
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Heading Dark',
-          widget: const AppText(
-            'Heading Text',
-            variant: TextVariant.heading,
+        GoldenTestScenario(
+          name: 'label variant',
+          child: const AppText(
+            'Label Text',
+            variant: TextVariant.label,
           ),
-          theme: darkTheme,
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Body Dark',
-          widget: const AppText(
-            'Body Text',
+        GoldenTestScenario(
+          name: 'caption variant',
+          child: const AppText(
+            'Caption Text',
+            variant: TextVariant.caption,
+          ),
+        ),
+        GoldenTestScenario(
+          name: 'with custom color',
+          child: const AppText(
+            'Colored Text',
             variant: TextVariant.body,
+            color: Colors.blue,
           ),
-          theme: darkTheme,
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_text_dark_theme',
-        scenarios,
-      );
-    });
-  });
+        GoldenTestScenario(
+          name: 'with overflow',
+          child: const SizedBox(
+            width: 100,
+            child: AppText(
+              'This is a very long text that should overflow',
+              variant: TextVariant.body,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -1,125 +1,56 @@
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter_fi_chart/presentation/atomic/atoms/app_divider.dart';
-import '../../../helpers/atomic/golden_test_helper.dart';
 
 void main() {
-  group('AppDivider Golden Tests', () {
-    setUpAll(() async {
-      await GoldenTestHelper.setupGoldenTests();
-    });
-
-    testGoldens('AppDivider renders correctly in different states',
-        (tester) async {
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Default Divider',
-          widget: const SizedBox(
+  goldenTest(
+    'AppDivider renders correctly',
+    fileName: 'app_divider',
+    builder: () => GoldenTestGroup(
+      children: [
+        GoldenTestScenario(
+          name: 'default',
+          child: const SizedBox(
             width: 200,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Above'),
-                AppDivider(),
-                Text('Below'),
-              ],
-            ),
+            child: AppDivider(),
           ),
-          useMaterialApp: true,
-          useScaffold: true,
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Colored Divider',
-          widget: const SizedBox(
+        GoldenTestScenario(
+          name: 'with custom color',
+          child: const SizedBox(
             width: 200,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Above'),
-                AppDivider(
-                  color: Colors.blue,
-                  thickness: 2,
-                ),
-                Text('Below'),
-              ],
+            child: AppDivider(
+              color: Colors.blue,
             ),
           ),
-          brightness: Brightness.light,
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Indented Divider',
-          widget: const SizedBox(
+        GoldenTestScenario(
+          name: 'with custom thickness',
+          child: const SizedBox(
             width: 200,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Above'),
-                AppDivider(
-                  indent: 16,
-                  endIndent: 16,
-                ),
-                Text('Below'),
-              ],
+            child: AppDivider(
+              thickness: 4.0,
             ),
           ),
-          theme: ThemeData.light(),
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_divider_states',
-        scenarios,
-        surfaceSize: const Size(300, 800),
-        skipPumpAndSettle: false,
-      );
-    });
-
-    testGoldens('AppVerticalDivider renders correctly in different states',
-        (tester) async {
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Default Vertical',
-          widget: const SizedBox(
-            height: 100,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Left'),
-                AppVerticalDivider(),
-                Text('Right'),
-              ],
+        GoldenTestScenario(
+          name: 'with custom indent',
+          child: const SizedBox(
+            width: 200,
+            child: AppDivider(
+              indent: 20.0,
+              endIndent: 20.0,
             ),
           ),
-          brightness: Brightness.light,
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Colored Vertical',
-          widget: const SizedBox(
-            height: 100,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Left'),
-                AppVerticalDivider(
-                  color: Colors.blue,
-                  thickness: 2,
-                ),
-                Text('Right'),
-              ],
-            ),
+        GoldenTestScenario(
+          name: 'vertical divider',
+          child: const SizedBox(
+            height: 200,
+            child: AppVerticalDivider(),
           ),
-          theme: ThemeData.dark(),
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_vertical_divider_states',
-        scenarios,
-        surfaceSize: const Size(300, 400),
-      );
-    });
-  });
+      ],
+    ),
+  );
 }

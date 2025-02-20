@@ -1,79 +1,69 @@
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter_fi_chart/presentation/atomic/atoms/app_text_field.dart';
-import '../../../helpers/atomic/golden_test_helper.dart';
 
 void main() {
-  group('AppTextField Golden Tests', () {
-    setUpAll(() async {
-      await GoldenTestHelper.setupGoldenTests();
-    });
-
-    testGoldens('AppTextField renders correctly in different states',
-        (tester) async {
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Empty',
-          widget: const AppTextField(
-            label: 'Enter text',
+  goldenTest(
+    'AppTextField renders correctly',
+    fileName: 'app_text_field',
+    builder: () => GoldenTestGroup(
+      children: [
+        GoldenTestScenario(
+          name: 'default',
+          child: const SizedBox(
+            width: 300,
+            child: AppTextField(
+              label: 'Enter text',
+            ),
           ),
         ),
-        GoldenTestHelper.createScenario(
-          name: 'With Value',
-          widget: const AppTextField(
-            label: 'Sample Text',
-            value: 'Sample Value',
+        GoldenTestScenario(
+          name: 'with value',
+          child: const SizedBox(
+            width: 300,
+            child: AppTextField(
+              label: 'Label',
+              value: 'Sample text',
+            ),
           ),
         ),
-        GoldenTestHelper.createScenario(
-          name: 'With Error',
-          widget: const AppTextField(
-            label: 'Error Field',
-            error: 'Error message',
+        GoldenTestScenario(
+          name: 'with error',
+          child: const SizedBox(
+            width: 300,
+            child: AppTextField(
+              label: 'Label',
+              error: 'Error message',
+            ),
           ),
         ),
-        GoldenTestHelper.createScenario(
-          name: 'Disabled',
-          widget: const AppTextField(
-            label: 'Disabled field',
-            enabled: false,
+        GoldenTestScenario(
+          name: 'disabled',
+          child: const SizedBox(
+            width: 300,
+            child: AppTextField(
+              label: 'Disabled field',
+              enabled: false,
+            ),
           ),
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_text_field_states',
-        scenarios,
-      );
-    });
-
-    testGoldens('AppTextField renders correctly in dark theme', (tester) async {
-      final darkTheme = ThemeData.dark();
-      final scenarios = [
-        GoldenTestHelper.createScenario(
-          name: 'Empty Dark',
-          widget: const AppTextField(
-            label: 'Enter text',
+        GoldenTestScenario(
+          name: 'with prefix',
+          child: const SizedBox(
+            width: 300,
+            child: AppTextField(
+              label: 'Amount',
+              prefix: Icon(Icons.attach_money),
+            ),
           ),
-          theme: darkTheme,
         ),
-        GoldenTestHelper.createScenario(
-          name: 'With Value Dark',
-          widget: const AppTextField(
-            label: 'Sample Text',
-            value: 'Sample Value',
+        GoldenTestScenario(
+          name: 'with label',
+          child: const AppTextField(
+            label: 'Label',
           ),
-          theme: darkTheme,
         ),
-      ];
-
-      await GoldenTestHelper.pumpGoldenTest(
-        tester,
-        'app_text_field_dark_theme',
-        scenarios,
-      );
-    });
-  });
+      ],
+    ),
+  );
 }
