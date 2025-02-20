@@ -108,6 +108,9 @@ jobs:
       - name: Install dependencies
         run: make deps
       
+      - name: Generate golden files
+        run: flutter test --update-goldens --tags=golden
+      
       - name: Run golden tests
         run: flutter test --tags=golden
       
