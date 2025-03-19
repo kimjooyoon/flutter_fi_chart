@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Financial Chart Demo'),
+      home: const MyHomePage(title: '금융 차트 데모'),
     );
   }
 }
@@ -61,7 +61,16 @@ class _MyHomePageState extends State<MyHomePage> {
       body: const Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Text('Welcome to Financial Chart'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('금융 차트에 오신 것을 환영합니다', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+            Text('한글 폰트 테스트 (보통 글꼴)', style: TextStyle(fontSize: 16)),
+            Text('한글 폰트 테스트 (볼드 글꼴)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text('한글 폰트 테스트 (이탤릭 글꼴)', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+          ],
+        ),
       ),
     );
   }

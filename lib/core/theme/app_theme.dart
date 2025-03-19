@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData get light => ThemeData(
         useMaterial3: true,
+        fontFamily: 'NotoSansKR',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2196F3),
           brightness: Brightness.light,
@@ -45,6 +46,7 @@ class AppTheme {
 
   static ThemeData get dark => ThemeData(
         useMaterial3: true,
+        fontFamily: 'NotoSansKR',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2196F3),
           brightness: Brightness.dark,
