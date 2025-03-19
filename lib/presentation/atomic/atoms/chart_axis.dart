@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show PathMetric;
 
 /// 차트 축 방향
 enum AxisDirection {
@@ -238,14 +239,14 @@ class _AxisPainter extends CustomPainter {
         
         // 레이블 회전 적용
         canvas.save();
-        canvas.translate(x, size.height + labelPadding.vertical / 2);
+        canvas.translate(x, size.height + (labelPadding as EdgeInsets).top + (labelPadding as EdgeInsets).bottom / 2);
         canvas.rotate(labelRotation);
         
         textPainter.paint(
           canvas, 
           Offset(
             -textPainter.width / 2,
-            tickLength + labelPadding.top,
+            tickLength + (labelPadding as EdgeInsets).top,
           ),
         );
         
@@ -313,13 +314,13 @@ class _AxisPainter extends CustomPainter {
         
         // 레이블 회전 적용
         canvas.save();
-        canvas.translate(-labelPadding.horizontal / 2, y);
+        canvas.translate(-((labelPadding as EdgeInsets).left + (labelPadding as EdgeInsets).right) / 2, y);
         canvas.rotate(labelRotation);
         
         textPainter.paint(
           canvas, 
           Offset(
-            -textPainter.width - tickLength - labelPadding.right,
+            -textPainter.width - tickLength - (labelPadding as EdgeInsets).right,
             -textPainter.height / 2,
           ),
         );
