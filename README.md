@@ -125,6 +125,11 @@ GRPC_URL=localhost:50051
 6. 코드 리뷰 진행
 7. 머지
 
+## Image
+
+<img width="796" alt="image" src="https://github.com/user-attachments/assets/e06a53f6-84aa-4e26-957d-67fa2a408b25" />
+
+
 ## 라이선스
 
 MIT License
