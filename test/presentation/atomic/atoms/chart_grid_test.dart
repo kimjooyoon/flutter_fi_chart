@@ -11,7 +11,7 @@ void main() {
         // 기본 그리드 테스트
         GoldenTestScenario(
           name: '기본 설정',
-          child: SizedBox(
+          child: const SizedBox(
             width: 300,
             height: 200,
             child: AtomChartGrid(
@@ -39,7 +39,7 @@ void main() {
         // 사용자 지정 선 두께 테스트
         GoldenTestScenario(
           name: '두꺼운 선',
-          child: SizedBox(
+          child: const SizedBox(
             width: 300,
             height: 200,
             child: AtomChartGrid(
@@ -54,7 +54,7 @@ void main() {
         // 다양한 그리드 밀도 테스트
         GoldenTestScenario(
           name: '고밀도 그리드',
-          child: SizedBox(
+          child: const SizedBox(
             width: 300,
             height: 200,
             child: AtomChartGrid(
@@ -73,8 +73,8 @@ void main() {
             child: AtomChartGrid(
               horizontalLinesCount: 5,
               verticalLinesCount: 6,
-              horizontalDashPattern: [5, 5],
-              verticalDashPattern: [5, 5],
+              horizontalDashPattern: const [5, 5],
+              verticalDashPattern: const [5, 5],
             ),
           ),
         ),
